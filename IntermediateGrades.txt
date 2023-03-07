@@ -1,0 +1,22 @@
+class IntermediateGrades:
+    def __init__(self, Session_2,Session_3,Session_4,Session_5,Session_6):
+        self.Session_2 = Session_2
+        self.Session_3 = Session_3
+        self.Session_4 = Session_4   
+        self.Session_5 = Session_5   
+        self.Session_6 = Session_6
+        
+        def set_session_2(self,I2):
+             self._Session_2 = I2
+             
+        def set_session_3(self,I3):
+             self._Session_3 = I3
+        
+        def set_session_4(self,I4):
+             self._Session_4 = I4
+        
+        def set_session_5(self,I5):
+             self._Session_5 = I5
+            
+        def set_session_6(self,I6):
+             self._Session_5 = I6
