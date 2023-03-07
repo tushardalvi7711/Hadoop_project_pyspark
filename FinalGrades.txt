@@ -1,0 +1,67 @@
+class FinalGrades:
+    def __init__(self,ES_1_1 ,ES_1_2,
+	ES_2_1,ES_2_2,ES_3_1,ES_3_2,ES_3_3,ES_3_4,ES_3_5,
+	ES_4_1,ES_4_2,ES_5_1,ES_5_2,ES_5_3,ES_6_1,ES_6_2,Total):
+        
+        self.ES_1_1 = ES_1_1
+        self.ES_1_2 = ES_1_2
+        self.ES_2_1	= ES_2_1
+        self.ES_2_2 = ES_2_2
+        self.ES_3_1 = ES_3_1
+        self.ES_3_2 = ES_3_2
+        self.ES_3_3 = ES_3_3
+        self.ES_3_4 = ES_3_4
+        self.ES_3_5 = ES_3_5
+        self.ES_4_1 = ES_4_1
+        self.ES_4_2 = ES_4_2
+        self.ES_5_1 = ES_5_1
+        self.ES_5_2 = ES_5_2
+        self.ES_5_3 = ES_5_3
+        self.ES_6_1 = ES_6_1
+        self.ES_6_2 = ES_6_2
+        self.Total = Total
+        		
+        def set_ES_1_1(self,f1):
+             self._ES_1_1 = f1
+             
+        def set_ES_1_2(self,f2):
+             self._ES_1_2 = f2
+             
+        def set_ES_2_1(self,f3):
+             self._ES_1_3 = f3
+             
+        def set_ES_2_2(self,f4):
+             self._ES_1_4 = f4
+             
+        def set_ES_3_1(self,f5):
+             self._ES_3_1 = f5
+    
+        def set_ES_3_2(self,f6):
+             self._ES_3_2 = f6
+             
+        def set_ES_3_3(self,f7):
+             self._ES_3_3 = f7
+             
+        def set_ES_3_4(self,f8):
+             self._ES_3_5 = f8
+             
+        def set_ES_4_1(self,f9):
+             self._ES_4_1 = f9
+             
+        def set_ES_4_2(self,f10):
+             self._ES_4_2 = f10
+             
+        def set_ES_5_1(self,f11):
+             self._ES_5_1 = f11
+             
+        def set_ES_5_2(self,f11):
+             self._ES_5_1 = f11
+             
+        def set_ES_6_1(self,f12):
+             self._ES_6_1 = f12
+             
+        def set_ES_6_2(self,f13):
+             self._ES_6_2 = f13
+             
+        def set_Total(self,f14):
+             self._Total = f14
