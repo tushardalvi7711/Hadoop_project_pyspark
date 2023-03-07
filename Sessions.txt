@@ -1,0 +1,65 @@
+class Sessions:
+    def __init__(self,session,exercise,activity,start_time,end_time,idle_time,mouse_wheel,mouse_wheel_click,mouse_click_left,mouse_click_right,
+                 mouse_movement,keystroke):
+        self.session = session
+        self.exercise = exercise
+        self.activity = activity
+        self.start_time = start_time
+        self.end_time = end_time
+        self.idle_time = idle_time
+        self.mouse_wheel = mouse_wheel
+        self.mouse_wheel_click = mouse_wheel_click
+        self.mouse_click_left = mouse_click_left
+        self.mouse_click_right = mouse_click_right
+        self.mouse_movement = mouse_movement
+        self.keystroke = keystroke
+                  
+    def set_session(self,s1):
+         self._session = s1
+         
+    def set_exercise(self,s2):
+          self._exercise = s2
+          
+    def set_activity(self,s3):
+           self._activity = s3
+    
+    def set_start_time(self,s4):
+           self._start_time = s4
+           
+    def set_end_time(self,s5):
+          self._end_time = s5
+          
+    def set_idle_time(self,s6):
+          self._idle_time = s6
+          
+    def set_mouse_wheel(self,s7):
+          self._mouse_wheel = s7
+         
+    def set_mouse_wheel_click(self,s8):
+         self._mouse_wheel_click = s8
+         
+    def set_mouse_click_left(self,s9):
+         self._mouse_click_left = s9
+         
+         
+    def set_mouse_click_right(self,s10):
+           self._mouse_click_right = s10
+           
+         
+    def set_mouse_movement(self,s11):
+           self._mouse_movement = s11
+           
+    def set_keystroke(self,s12):
+         self._keystroke = s12
+          
+               
+           
+          
+    
+         
+          
+          
+          
+    
+      
+        
