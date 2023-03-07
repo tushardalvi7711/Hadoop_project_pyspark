@@ -1,0 +1,35 @@
+class Student:
+    def __init__(self, student_id,session, intermediategrades,finalgrades):
+      self.student_id = student_id
+      self.session = session
+      self.intermediategrades = intermediategrades
+      self.finalgrades = finalgrades
+
+
+def get_student_id(self):
+    return self._student_id
+
+def set_session(self,a):
+     self._session = a 
+     
+def get_session(self):
+    return self._session
+ 
+def get_intermediategrades(self):
+    return self._intermediategrades
+    
+def set_intermediategrades(self,b):
+     self._session = b 
+     
+
+def get_finalgrades(self):
+     return self._finalgrades
+     
+     
+def set_finalgrades(self,c):
+     self._session = c 
+     
+def __str__ (self):
+    return "Student[a =" + str(self.a) + " ,b =" + str(self.b) + ",c= " + str(self.c) + "]"
+    
+    
