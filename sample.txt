@@ -1,0 +1,154 @@
+# -*- coding: utf-8 -*-
+
+import pyspark
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import row_number
+from pyspark.sql.functions import col
+from pyspark.sql.functions import lit
+from pyspark.sql.functions import collect_list
+from pyspark.sql.functions import struct
+from pyspark.sql.window import Window
+from pyspark.sql.functions import *
+from pyspark.sql.functions import isnull
+from pyspark.sql import Row
+from pyspark.sql.types import StructField,StructType,IntegerType,DoubleType,StringType
+#
+import Student
+#import Sessions
+import os, sys
+#import IntermediateGrades
+#import FinalGrades
+
+spark = SparkSession.builder.appName('Pyspark').enableHiveSupport().getOrCreate()
+
+df= spark.read.option("header",False).option("inferSchema", True).csv("/user/cloudera/Processes/*")
+
+#df= spark.read.option("header",False).option("inferSchema", True).csv("D:\\User_Space\\EPMDataset\\EPM Dataset 2\Data\\Processes\\*\\")
+
+#2.Read the above HDFS file/files in a Spark dataframe.
+df=df.toDF("session","std_ID","exercise","activity","start_time","end_time","idle_time","mouse_wheel",
+		             "mouse_wheel_click","mouse_click_left","mouse_click_right","mouse_movement","keystroke")
+
+df_Session = df.groupBy("std_ID").agg(collect_list(struct("session","std_ID","exercise","activity","start_time","end_time","idle_time","mouse_wheel",
+		             "mouse_wheel_click","mouse_click_left","mouse_click_right","mouse_movement","keystroke")).alias("Sessiondata"))
+
+#df_Session.show()
+
+#3. Assign a unique key to each record and call  the corresponding column as ‘record_id’
+window=Window().orderBy("std_ID")
+Newdf = df.withColumn("record_id",row_number().over(window))
+#Newdf.show()
+
+#spark.sql("create database pyspark")
+spark.sql("use pyspark")
+Newdf.write.mode("overwrite").saveAsTable("pyspark.processes_source")
+
+
+#4.	 //converting the dataframe in proper date and time format
+
+errorLogRecords1=Newdf.select(col("record_id"),lit(col("start_time").alias("Column_name")),col("start_time").alias("value")).where(~ col("start_time").rlike("\\d{2}.\\d{2}.\\d{4}.\\d{2}.\\d{2}.\\d{2}"))
+
+#errorLogRecords1.show()
+errorLogRecords2 =Newdf.select(col("record_id"),lit(col("end_time").alias("Column_name")),col("start_time").alias("value")).where(~ col("end_time").rlike("\\d{2}.\\d{2}.\\d{4}.\\d{2}.\\d{2}.\\d{2}"))
+
+errorLogRecords = errorLogRecords1.union(errorLogRecords2)
+#print(errorLogRecords.count())
+
+#5. Similarly read the data from files final_grades.xlsx and intermediate_grades.xlsx in Spark. 
+
+final_grades1 = spark.read.option("inferSchema",True).option("header",True).csv("/user/cloudera/final_grades_First_time.csv")
+
+final_grades2 = spark.read.option("inferSchema",True).option("header",True).csv("/user/cloudera/final_grades_Second_time.csv")
+
+final_grades = final_grades1.unionAll(final_grades2)
+
+final_grades =final_grades.groupBy("Student_ID").agg(collect_list(struct("Student_ID","ES_1_1","ES_1_2","ES_2_1","ES_2_2","ES_3_1","ES_3_2","ES_3_3","ES_3_4","ES_3_5","ES_4_1","ES_4_2","ES_5_1","ES_5_2","ES_5_3","ES_6_1","ES_6_2","Total")).alias("FinalGrades"))
+
+#final_grades.show()
+
+Int_Grades=spark.read.option("inferSchema",True).option("header",True).csv("/user/cloudera/intermediate_grades.csv")
+
+Int_Grades = Int_Grades.groupBy("Student_Id").agg(collect_list(struct("Student_Id","Session_2","Session_3","Session_4","Session_5","Session_6")).alias("int_grades"))
+#Int_Grades.show()
+
+#Int_Grades = Int_Grades.select("Student_Id","int_grades")
+
+
+df1= df_Session.join(Int_Grades,df_Session.std_ID ==  Int_Grades.Student_Id,"left")
+
+#df1.show()
+
+joined_df=df1.join(final_grades,df1.std_ID == final_grades.Student_ID,"left" )
+#joined_df.show()
+
+Joined_df = joined_df.select("std_Id","Sessiondata","int_Grades","FinalGrades")
+
+Joined_df.show()
+
+#Joined_df.printSchema()
+
+
+Joined_df_RDD = Joined_df.rdd
+#Joined_df_RDD.foreach(lambda x : print(x))
+
+       
+def func(getClass):
+    SessionsList = []
+    IntermediateGradesList = []
+    FinalGradesList = []
+    mystd_Id = getClass.std_Id
+    mySessiondata =getClass.Sessiondata
+    myint_Grades = getClass.int_Grades
+    myFinalGrades = getClass.FinalGrades
+    
+       
+    for Sessionvalues in mySessiondata:
+        
+        SessionObj=Sessions.Sessions(Sessionvalues.session,Sessionvalues.std_ID,Sessionvalues.exercise,Sessionvalues.start_time,
+        Sessionvalues.end_time,Sessionvalues.idle_time, Sessionvalues.mouse_wheel,
+        Sessionvalues.mouse_wheel_click,Sessionvalues.mouse_click_left,Sessionvalues.mouse_click_right,
+        Sessionvalues.mouse_movement,Sessionvalues.keystroke)
+        
+        SessionsList.append(SessionObj)
+        
+    for IntGradeValues in  myint_Grades:
+        IntGradesObj = IntermediateGrades.IntermediateGrades(IntGradeValues[0],IntGradeValues.Session_3,
+                                                             IntGradeValues.Session_4,IntGradeValues.Session_5,IntGradeValues.Session_6)
+        IntermediateGradesList.append(IntGradesObj)
+        
+        
+    if myFinalGrades  is not None:
+        for FinalGrdaesValues in myFinalGrades :
+            FinalGradesObj = FinalGrades.FinalGrades(FinalGrdaesValues.ES_1_1, FinalGrdaesValues.ES_1_2, FinalGrdaesValues.ES_2_1,FinalGrdaesValues.ES_2_2, FinalGrdaesValues.ES_3_1, 
+                                                     FinalGrdaesValues.ES_3_2, FinalGrdaesValues.ES_3_3, FinalGrdaesValues.ES_3_4, FinalGrdaesValues.ES_3_5, FinalGrdaesValues.ES_4_1, 
+                                                     FinalGrdaesValues.ES_4_2, FinalGrdaesValues.ES_5_1, FinalGrdaesValues.ES_5_2, FinalGrdaesValues.ES_5_3, FinalGrdaesValues.ES_6_1, 
+                                                     FinalGrdaesValues.ES_6_2, FinalGrdaesValues.Total)
+            
+        FinalGradesList.append(FinalGradesObj)
+    
+    Student.Student(mystd_Id, SessionsList, IntermediateGradesList, FinalGradesList)
+    return Student 
+    
+studentRDD=Joined_df_RDD.map(lambda getClass: func(getClass))
+#studentRDD.foreach(lambda x:print(x))
+
+       
+
+catalog = ''.join("""{
+    "table": {
+        "namespace": "default",
+        "name": "student_table"
+    },
+    "rowkey": "std_Id",
+    "columns": {
+        "std_Id": {"cf": "rowkey", "col": "student_id", "type": "string"},
+        "Sessiondata": {"cf": "cf", "col": "session_data", "type": "double"},
+        "int_Grades": {"cf": "cf", "col": "intermediate_marks", "type": "double"},
+        "FinalGrades": {"cf": "cf", "col": "final_marks", "type": "double"}
+    }
+}""".split())
+
+student_table.write\
+    .options(catalog=catalog, newtable=5) \
+    .format("org.apache.hadoop.hbase.spark") \
+    .option("hbase.spark.use.hbasecontext", "false").mode("overwrite").save()
